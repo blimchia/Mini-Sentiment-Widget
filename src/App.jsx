@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 // --- Sub-Components ---
 
-const RatingChips = ({ rating, setRating, disabled }) => (
+const RatingChips = ({ rating, setRating, disabled, isDarkMode }) => (
   <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
     {[1, 2, 3, 4, 5].map((num) => (
       <button
@@ -13,10 +13,11 @@ const RatingChips = ({ rating, setRating, disabled }) => (
         style={{
           padding: '10px 15px',
           borderRadius: '20px',
-          border: '1px solid #ccc',
-          backgroundColor: rating === num ? '#007bff' : '#f8f9fa',
-          color: rating === num ? 'white' : '#000',
+          border: `1px solid ${isDarkMode ? '#555' : '#ccc'}`,
+          backgroundColor: rating === num ? '#007bff' : (isDarkMode ? '#333' : '#f8f9fa'),
+          color: rating === num ? 'white' : (isDarkMode ? '#fff' : '#000'),
           cursor: disabled ? 'not-allowed' : 'pointer',
+          transition: 'all 0.2s ease', // Smooth color transition
         }}
       >
         {num}
@@ -25,7 +26,7 @@ const RatingChips = ({ rating, setRating, disabled }) => (
   </div>
 );
 
-const CommentBox = ({ comment, setComment, disabled }) => (
+const CommentBox = ({ comment, setComment, disabled, isDarkMode }) => (
   <textarea
     value={comment}
     onChange={(e) => setComment(e.target.value)}
@@ -36,11 +37,12 @@ const CommentBox = ({ comment, setComment, disabled }) => (
       width: '100%', 
       marginBottom: '15px', 
       padding: '10px',
-      backgroundColor: '#fff',
-      color: '#000',
-      border: '1px solid #ccc',
+      backgroundColor: isDarkMode ? '#222' : '#fff',
+      color: isDarkMode ? '#fff' : '#000',
+      border: `1px solid ${isDarkMode ? '#555' : '#ccc'}`,
       borderRadius: '5px',
       boxSizing: 'border-box',
+      transition: 'all 0.2s ease',
     }}
   />
 );
@@ -56,27 +58,34 @@ const SubmitButton = ({ disabled, isSubmitting }) => (
       border: 'none',
       borderRadius: '5px',
       cursor: disabled ? 'not-allowed' : 'pointer',
+      transition: 'all 0.2s ease',
     }}
   >
     {isSubmitting ? 'Submitting...' : 'Submit'}
   </button>
 );
 
-const SummaryPanel = ({ submissions }) => {
+const SummaryPanel = ({ submissions, isDarkMode }) => {
   const total = submissions.length;
   const average = total === 0 ? 0 : (submissions.reduce((acc, curr) => acc + curr.rating, 0) / total).toFixed(1);
   const recentComments = submissions.slice(0, 3).map(sub => sub.comment).filter(Boolean);
 
   return (
-    <div style={{ marginTop: '30px', padding: '15px', borderTop: '2px solid #eee' }}>
+    <div style={{ 
+      marginTop: '30px', 
+      padding: '15px', 
+      borderTop: `2px solid ${isDarkMode ? '#444' : '#eee'}`,
+      transition: 'all 0.2s ease'
+    }}>
       <h3>Summary</h3>
       <p>Total submissions: {total}</p>
       <p>Average rating: {average}</p>
       
       <hr style={{ 
         border: 'none', 
-        borderTop: '1px solid #ccc', 
-        margin: '15px -15px' 
+        borderTop: `1px solid ${isDarkMode ? '#555' : '#ccc'}`, 
+        margin: '15px -15px',
+        transition: 'all 0.2s ease'
       }} />
 
       <ul style={{ paddingLeft: '20px' }}>
@@ -91,6 +100,9 @@ const SummaryPanel = ({ submissions }) => {
 // --- Main Application ---
 
 export default function App() {
+  // Added theme state, defaulting to false (Light Mode)
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  
   const [rating, setRating] = useState(null);
   const [comment, setComment] = useState('');
   const [submissions, setSubmissions] = useState([]);
@@ -114,31 +126,48 @@ export default function App() {
     }, 3000);
   };
 
-  const baseStyles = {
-    backgroundColor: '#ffffff',
-    color: '#333333',
+  const themeStyles = {
+    backgroundColor: isDarkMode ? '#1a1a1a' : '#ffffff',
+    color: isDarkMode ? '#ffffff' : '#333333',
     minHeight: '100vh', 
     padding: '40px 20px',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    transition: 'all 0.3s ease'
   };
 
   return (
-    <div style={baseStyles}>
+    <div style={themeStyles}>
       <div style={{ maxWidth: '400px', margin: '0 auto', fontFamily: 'sans-serif' }}>
         
-        <div style={{ marginBottom: '20px' }}>
+        {/* Header section with Theme Toggle Button */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h2 style={{ margin: 0 }}>Mini Sentiment Widget</h2>
+          <button 
+            type="button"
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            style={{
+              background: 'transparent',
+              border: `1px solid ${isDarkMode ? '#555' : '#ccc'}`,
+              color: isDarkMode ? '#fff' : '#000',
+              padding: '5px 10px',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            {isDarkMode ? '☀️ Light' : '🌙 Dark'}
+          </button>
         </div>
         
         <form onSubmit={handleSubmit}>
-          <RatingChips rating={rating} setRating={setRating} disabled={isSubmitting} />
-          <CommentBox comment={comment} setComment={setComment} disabled={isSubmitting} />
+          <RatingChips rating={rating} setRating={setRating} disabled={isSubmitting} isDarkMode={isDarkMode} />
+          <CommentBox comment={comment} setComment={setComment} disabled={isSubmitting} isDarkMode={isDarkMode} />
           
           <SubmitButton disabled={!rating || isSubmitting} isSubmitting={isSubmitting} />
           
           {message && <p style={{ color: '#28a745', fontWeight: 'bold', marginTop: '15px' }}>{message}</p>}
         </form>
-        <SummaryPanel submissions={submissions} />
+        <SummaryPanel submissions={submissions} isDarkMode={isDarkMode} />
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 
 A lightweight React frontend application that implements a simple sentiment feedback widget. Users can select a rating, leave a comment, and view a summary of recent submissions.
 
-## 🚀 Instructions for Running Locally
+## Instructions for Running Locally
 
 To get this project up and running on your local machine, follow these steps:
 
@@ -34,3 +34,5 @@ In building this widget, several technical decisions were made to prioritize cle
 **Styling**: Standard inline styles were used to keep the components self-contained and simple, ensuring all functional requirements are met without the overhead of external CSS libraries or frameworks.
 
 **Spam Prevention**: A simple 3-second lock-out mechanism is implemented using setTimeout within the submission handler to disable the form inputs temporarily after a successful submission.
+
+**Dark/Light Mode Toggle**: A responsive light and dark mode toggle was implemented using React state. The components utilize dynamic inline styles and CSS transitions to smoothly switch the UI theme without relying on external stylesheets.
