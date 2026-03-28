@@ -1,1 +1,1 @@
-# Mini-Sentiment-Widget
+Mini Sentiment Widget
