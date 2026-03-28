@@ -62,6 +62,32 @@ const SubmitButton = ({ disabled, isSubmitting }) => (
   </button>
 );
 
+const SummaryPanel = ({ submissions }) => {
+  const total = submissions.length;
+  const average = total === 0 ? 0 : (submissions.reduce((acc, curr) => acc + curr.rating, 0) / total).toFixed(1);
+  const recentComments = submissions.slice(0, 3).map(sub => sub.comment).filter(Boolean);
+
+  return (
+    <div style={{ marginTop: '30px', padding: '15px', borderTop: '2px solid #eee' }}>
+      <h3>Summary</h3>
+      <p>Total submissions: {total}</p>
+      <p>Average rating: {average}</p>
+      
+      <hr style={{ 
+        border: 'none', 
+        borderTop: '1px solid #ccc', 
+        margin: '15px -15px' 
+      }} />
+
+      <ul style={{ paddingLeft: '20px' }}>
+        {recentComments.map((text, index) => (
+          <li key={index}>"{text}"</li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
 // --- Main Application ---
 
 export default function App() {
@@ -112,7 +138,7 @@ export default function App() {
           
           {message && <p style={{ color: '#28a745', fontWeight: 'bold', marginTop: '15px' }}>{message}</p>}
         </form>
-
+        <SummaryPanel submissions={submissions} />
       </div>
     </div>
   );
