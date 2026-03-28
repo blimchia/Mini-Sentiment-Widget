@@ -1,121 +1,119 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React, { useState } from 'react';
 
-function App() {
-  const [count, setCount] = useState(0)
+// --- Sub-Components ---
+
+const RatingChips = ({ rating, setRating, disabled }) => (
+  <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+    {[1, 2, 3, 4, 5].map((num) => (
+      <button
+        key={num}
+        type="button"
+        disabled={disabled}
+        onClick={() => setRating(num)}
+        style={{
+          padding: '10px 15px',
+          borderRadius: '20px',
+          border: '1px solid #ccc',
+          backgroundColor: rating === num ? '#007bff' : '#f8f9fa',
+          color: rating === num ? 'white' : '#000',
+          cursor: disabled ? 'not-allowed' : 'pointer',
+        }}
+      >
+        {num}
+      </button>
+    ))}
+  </div>
+);
+
+const CommentBox = ({ comment, setComment, disabled }) => (
+  <textarea
+    value={comment}
+    onChange={(e) => setComment(e.target.value)}
+    disabled={disabled}
+    placeholder="Enter your comment"
+    rows="4"
+    style={{ 
+      width: '100%', 
+      marginBottom: '15px', 
+      padding: '10px',
+      backgroundColor: '#fff',
+      color: '#000',
+      border: '1px solid #ccc',
+      borderRadius: '5px',
+      boxSizing: 'border-box',
+    }}
+  />
+);
+
+const SubmitButton = ({ disabled, isSubmitting }) => (
+  <button
+    type="submit"
+    disabled={disabled}
+    style={{
+      padding: '10px 20px',
+      backgroundColor: disabled ? '#6c757d' : '#28a745',
+      color: 'white',
+      border: 'none',
+      borderRadius: '5px',
+      cursor: disabled ? 'not-allowed' : 'pointer',
+    }}
+  >
+    {isSubmitting ? 'Submitting...' : 'Submit'}
+  </button>
+);
+
+// --- Main Application ---
+
+export default function App() {
+  const [rating, setRating] = useState(null);
+  const [comment, setComment] = useState('');
+  const [submissions, setSubmissions] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!rating) return;
+
+    setIsSubmitting(true);
+    setMessage('Thank you for your feedback.');
+
+    setSubmissions((prev) => [{ rating, comment, id: Date.now() }, ...prev]);
+
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setMessage('');
+      setRating(null);
+      setComment('');
+    }, 3000);
+  };
+
+  const baseStyles = {
+    backgroundColor: '#ffffff',
+    color: '#333333',
+    minHeight: '100vh', 
+    padding: '40px 20px',
+    boxSizing: 'border-box'
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div style={baseStyles}>
+      <div style={{ maxWidth: '400px', margin: '0 auto', fontFamily: 'sans-serif' }}>
+        
+        <div style={{ marginBottom: '20px' }}>
+          <h2 style={{ margin: 0 }}>Mini Sentiment Widget</h2>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+        
+        <form onSubmit={handleSubmit}>
+          <RatingChips rating={rating} setRating={setRating} disabled={isSubmitting} />
+          <CommentBox comment={comment} setComment={setComment} disabled={isSubmitting} />
+          
+          <SubmitButton disabled={!rating || isSubmitting} isSubmitting={isSubmitting} />
+          
+          {message && <p style={{ color: '#28a745', fontWeight: 'bold', marginTop: '15px' }}>{message}</p>}
+        </form>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      </div>
+    </div>
+  );
 }
-
-export default App
